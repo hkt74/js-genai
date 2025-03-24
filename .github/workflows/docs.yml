@@ -28,7 +28,7 @@ jobs:
       run: |
         echo "Checking for uncommitted changes in docs/..."
         git_status=$(git status --porcelain docs/)
-        new_files=$(git status --porcelain docs/ --name-only | grep "^A")
+        new_files=$(git status --porcelain docs/ | grep "^A")
         echo "git_status: $git_status"
         echo "new_files: $new_files"
         if [ -n "$git_status" ]; then

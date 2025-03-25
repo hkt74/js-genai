@@ -44,8 +44,8 @@ jobs:
       - name: Commit and Push to static-content-latest
         if: steps.check_changes.outputs.has_changes == 'true' # Only run if changes were detected
         run: |
-          git config user.email "genai-sdk-bot@google.com"
-          git config user.name "genai-sdk-bot"
+          # git config user.email "genai-sdk-bot@google.com"
+          # git config user.name "genai-sdk-bot"
           git add docs/
           COMMIT_MESSAGE=docs: Update latest static content from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}
           echo "Committing message: $COMMIT_MESSAGE"

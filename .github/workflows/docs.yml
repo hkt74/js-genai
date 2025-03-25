@@ -27,7 +27,7 @@ jobs:
       - name: Check for documentation changes
         id: check_changes
         run: |
-          if [[ -n "$(git status --porcelain docs/)" ]]; then
+          if [[ -n "$(git diff pages-only..docs)" ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else

@@ -34,7 +34,7 @@ jobs:
           else
             echo "No documentation changes detected."
             echo "::set-output name=has_changes::false"
-          fiß
+          fi
       - name: Get latest commit SHA
         id: get_commit_sha
         run: |

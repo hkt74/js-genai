@@ -1,4 +1,4 @@
-name: Updated docs
+name: Update docs
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   update-docs:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write

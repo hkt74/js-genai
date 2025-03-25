@@ -1,0 +1,54 @@
+name: Updated docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-docs:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x' 
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate documentation
+        run: npm run docs
+      - name: Check for documentation changes
+        id: check_changes
+        run: |
+          if [[ -n "$(git status --porcelain docs/)" ]]; then
+            echo "Documentation changes detected."
+            echo "::set-output name=has_changes::true"
+          else
+            echo "No documentation changes detected."
+            echo "::set-output name=has_changes::false"
+          fi
+      - name: Get latest commit SHA
+        id: get_commit_sha
+        run: |
+          COMMIT_SHA=$(git log -1 --pretty=%H) # Get latest commit SHA (full hash)
+          echo "::set-output name=commit_sha::$COMMIT_SHA"
+          echo "Latest commit SHA: $COMMIT_SHA"
+      - name: Commit and Push to static-content-latest
+        if: steps.check_changes.outputs.has_changes == 'true' # Only run if changes were detected
+        run: |
+          git config --local user.email "genai-sdk-bot@google.com"
+          git config --local user.name "genai-sdk-bot"
+          git add docs/
+          COMMIT_MESSAGE=docs: Update latest static content from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}
+          echo "Committing message: $COMMIT_MESSAGE"
+          git commit -m "$COMMIT_MESSAGE" --allow-empty
+          git push --force origin HEAD:static-content-latest

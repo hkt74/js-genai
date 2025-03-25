@@ -2,8 +2,7 @@ name: Update docs
 
 on:
   push:
-    branches:
-      - main
+    branches: [ 'main' ]
 
 jobs:
   update-docs:
@@ -30,24 +29,24 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain docs/)" ]]; then
             echo "Documentation changes detected."
-            echo "::set-output name=has_changes::true"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           else
             echo "No documentation changes detected."
-            echo "::set-output name=has_changes::false"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
       - name: Get latest commit SHA
         id: get_commit_sha
         run: |
           COMMIT_SHA=$(git log -1 --pretty=%H) # Get latest commit SHA (full hash)
-          echo "::set-output name=commit_sha::$COMMIT_SHA"
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
           echo "Latest commit SHA: $COMMIT_SHA"
-      - name: Commit and Push to static-content-latest
+      - name: Commit and Push to pages-only branch
         if: steps.check_changes.outputs.has_changes == 'true' # Only run if changes were detected
         run: |
           git config user.email "genai-sdk-bot@google.com"
           git config user.name "genai-sdk-bot"
           git add docs/
-          COMMIT_MESSAGE="docs: Update latest static content from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}"
-          echo "Committing message: $COMMIT_MESSAGE"
+          COMMIT_MESSAGE="docs: Update docs from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}"
+          echo "Commit message: $COMMIT_MESSAGE"
           git commit -m "$COMMIT_MESSAGE" --allow-empty
-          git push --force origin HEAD:static-content-latest
+          git push --force origin HEAD:pages-only

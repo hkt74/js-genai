@@ -47,7 +47,7 @@ jobs:
           # git config user.email "genai-sdk-bot@google.com"
           # git config user.name "genai-sdk-bot"
           git add docs/
-          COMMIT_MESSAGE=docs: Update latest static content from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}
+          COMMIT_MESSAGE="docs: Update latest static content from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}"
           echo "Committing message: $COMMIT_MESSAGE"
           git commit -m "$COMMIT_MESSAGE" --allow-empty
           git push --force origin HEAD:static-content-latest

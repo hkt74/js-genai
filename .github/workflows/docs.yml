@@ -27,7 +27,7 @@ jobs:
       - name: Check for documentation changes
         id: check_changes
         run: |
-          if [[ -n "$(git diff origin/pages-only HEAD -- docs/)" ]]; then
+          if [[ -n "$(git diff pages-only HEAD -- docs/)" ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else

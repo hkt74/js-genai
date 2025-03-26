@@ -28,7 +28,7 @@ jobs:
         id: check_changes
         run: |
           echo "pages diff: "
-          git diff "origin/pages-only" HEAD -- "pages/"
+          git diff pages-only HEAD -- pages/
           if [[ $(git diff --shortstat origin/pages-only HEAD -- ./pages) ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT

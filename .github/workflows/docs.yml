@@ -32,7 +32,7 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
             echo "No documentation changes detected."
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
       - name: Get latest commit SHA
         id: get_commit_sha

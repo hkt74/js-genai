@@ -17,6 +17,9 @@ const header = `/**
 
 function addHeader(filePath: string) {
   const content = fs.readFileSync(filePath, 'utf8');
+  if (content.startsWith(header)) {
+    return;
+  }
   fs.writeFileSync(filePath, header + content);
 }
 

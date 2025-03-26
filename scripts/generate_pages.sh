@@ -52,7 +52,15 @@ sync_and_remove_directory() {
   # Trailing slash on SOURCE_DIR/ is crucial: copies *contents* of SOURCE_DIR
   # Trailing slash on DEST_DIR/ ensures it copies *into* DEST_DIR
   echo "Syncing '$SOURCE_DIR' contents to '$DEST_DIR' (deleting extraneous)..."
-  rsync -a --delete "$SOURCE_DIR"/ "$DEST_DIR"/
+  if [ "$DEST_DIR" == "pages" ]; then
+    echo "Excluding 'stable/' directory during sync to 'pages/'."
+    # Use --exclude 'stable/' relative to the transfer root
+    # Trailing slashes on SOURCE_DIR and DEST_DIR are important here
+    rsync -av --delete --exclude 'stable/' "$SOURCE_DIR"/ "$DEST_DIR"/
+  else
+    echo "Performing standard sync to '$DEST_DIR/'."
+    rsync -av --delete "$SOURCE_DIR"/ "$DEST_DIR"/
+  fi
 
   # 4. Clean up the source directory
   echo "Cleaning up source directory '$SOURCE_DIR'..."

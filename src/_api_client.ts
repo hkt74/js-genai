@@ -12,7 +12,7 @@ import {File, HttpOptions, HttpResponse, UploadFileConfig} from './types';
 const CONTENT_TYPE_HEADER = 'Content-Type';
 const USER_AGENT_HEADER = 'User-Agent';
 const GOOGLE_API_CLIENT_HEADER = 'x-goog-api-client';
-export const SDK_VERSION = '0.6.0'; // x-release-please-version
+export const SDK_VERSION = '0.6.1'; // x-release-please-version
 const LIBRARY_LABEL = `google-genai-sdk/${SDK_VERSION}`;
 const VERTEX_AI_API_DEFAULT_VERSION = 'v1beta1';
 const GOOGLE_AI_API_DEFAULT_VERSION = 'v1beta';
@@ -548,7 +548,7 @@ export class ApiClient {
 
     const uploader = this.clientOptions.uploader;
     const fileStat = await uploader.stat(file);
-    fileToUpload.sizeBytes = fileStat.size;
+    fileToUpload.sizeBytes = String(fileStat.size);
     const mimeType = config?.mimeType ?? fileStat.type;
     if (mimeType === undefined || mimeType === '') {
       throw new Error(

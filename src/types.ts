@@ -183,6 +183,15 @@ export enum SubjectReferenceType {
   SUBJECT_TYPE_PRODUCT = 'SUBJECT_TYPE_PRODUCT',
 }
 
+export enum MediaModality {
+  MODALITY_UNSPECIFIED = 'MODALITY_UNSPECIFIED',
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  AUDIO = 'AUDIO',
+  DOCUMENT = 'DOCUMENT',
+}
+
 /** Metadata describes the input video content. */
 export declare interface VideoMetadata {
   /** Optional. The end offset of the video. */
@@ -457,8 +466,6 @@ export declare interface Schema {
   default?: unknown;
   /** Optional. Maximum length of the Type.STRING */
   maxLength?: string;
-  /** Optional. The title of the Schema. */
-  title?: string;
   /** Optional. SCHEMA FIELDS FOR TYPE STRING Minimum length of the Type.STRING */
   minLength?: string;
   /** Optional. Minimum number of the properties for Type.OBJECT. */
@@ -491,6 +498,8 @@ export declare interface Schema {
   propertyOrdering?: string[];
   /** Optional. Required properties of Type.OBJECT. */
   required?: string[];
+  /** Optional. The title of the Schema. */
+  title?: string;
   /** Optional. The type of the data. */
   type?: Type;
 }
@@ -983,7 +992,7 @@ export class GenerateContentResponsePromptFeedback {
 /** Represents token counting info for a single modality. */
 export declare interface ModalityTokenCount {
   /** The modality associated with this token count. */
-  modality?: Modality;
+  modality?: MediaModality;
   /** Number of tokens. */
   tokenCount?: number;
 }
@@ -1562,9 +1571,9 @@ export class ComputeTokensResponse {
 export declare interface CreateCachedContentConfig {
   /** Used to override HTTP request options. */
   httpOptions?: HttpOptions;
-  /** The TTL for this resource. The expiration time is computed: now + TTL. */
+  /** The TTL for this resource. The expiration time is computed: now + TTL. It is a duration string, with up to nine fractional digits, terminated by 's'. Example: "3.5s". */
   ttl?: string;
-  /** Timestamp of when this resource is considered expired. */
+  /** Timestamp of when this resource is considered expired. Uses RFC 3339 format, Example: 2014-10-02T15:01:23Z. */
   expireTime?: string;
   /** The user-generated meaningful display name of the cached content.
    */
@@ -1663,9 +1672,9 @@ export class DeleteCachedContentResponse {}
 export declare interface UpdateCachedContentConfig {
   /** Used to override HTTP request options. */
   httpOptions?: HttpOptions;
-  /** The TTL for this resource. The expiration time is computed: now + TTL. */
+  /** The TTL for this resource. The expiration time is computed: now + TTL. It is a duration string, with up to nine fractional digits, terminated by 's'. Example: "3.5s". */
   ttl?: string;
-  /** Timestamp of when this resource is considered expired. */
+  /** Timestamp of when this resource is considered expired. Uses RFC 3339 format, Example: 2014-10-02T15:01:23Z. */
   expireTime?: string;
 }
 
@@ -1733,7 +1742,7 @@ export declare interface File {
   /** Output only. MIME type of the file. */
   mimeType?: string;
   /** Output only. Size of the file in bytes. */
-  sizeBytes?: number;
+  sizeBytes?: string;
   /** Output only. The timestamp of when the `File` was created. */
   createTime?: string;
   /** Output only. The timestamp of when the `File` will be deleted. Only set if the `File` is scheduled to expire. */

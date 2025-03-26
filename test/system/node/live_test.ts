@@ -417,4 +417,57 @@ describe('live', () => {
 
     session.close();
   });
+
+  it('ML Dev should send tool response with function responses', async () => {
+    const clientOpts: GoogleGenAIOptions = {
+      vertexai: false,
+      apiKey: GOOGLE_API_KEY,
+      httpOptions: {
+        apiVersion: 'v1alpha',
+      },
+    };
+    const client = new GoogleGenAI(clientOpts);
+    const session = await make_session_with_queue(
+      client,
+      'models/gemini-2.0-flash-exp',
+    );
+
+    session.sendToolResponse({
+      functionResponses: [
+        {
+          'id': 'function-call-1',
+          'name': 'getStatus',
+          'response': {
+            'mood': 'happy',
+          },
+        },
+      ],
+    });
+    session.close();
+  });
+
+  it('Vertex should send tool response with function responses', async () => {
+    const clientOpts: GoogleGenAIOptions = {
+      vertexai: true,
+      project: GOOGLE_CLOUD_PROJECT,
+      location: GOOGLE_CLOUD_LOCATION,
+    };
+    const client = new GoogleGenAI(clientOpts);
+    const session = await make_session_with_queue(
+      client,
+      'gemini-2.0-flash-exp',
+    );
+
+    session.sendToolResponse({
+      functionResponses: [
+        {
+          'name': 'getStatus',
+          'response': {
+            'mood': 'happy',
+          },
+        },
+      ],
+    });
+    session.close();
+  });
 });

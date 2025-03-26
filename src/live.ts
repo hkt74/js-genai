@@ -271,6 +271,8 @@ export class Session {
 
     if (!Array.isArray(params.functionResponses)) {
       functionResponses = [params.functionResponses];
+    } else {
+      functionResponses = params.functionResponses;
     }
 
     if (functionResponses.length === 0) {

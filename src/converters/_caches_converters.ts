@@ -125,10 +125,6 @@ export function schemaToMldev(
     throw new Error('maxLength parameter is not supported in Gemini API.');
   }
 
-  if (common.getValueByPath(fromObject, ['title']) !== undefined) {
-    throw new Error('title parameter is not supported in Gemini API.');
-  }
-
   if (common.getValueByPath(fromObject, ['minLength']) !== undefined) {
     throw new Error('minLength parameter is not supported in Gemini API.');
   }
@@ -206,6 +202,11 @@ export function schemaToMldev(
   const fromRequired = common.getValueByPath(fromObject, ['required']);
   if (fromRequired != null) {
     common.setValueByPath(toObject, ['required'], fromRequired);
+  }
+
+  const fromTitle = common.getValueByPath(fromObject, ['title']);
+  if (fromTitle != null) {
+    common.setValueByPath(toObject, ['title'], fromTitle);
   }
 
   const fromType = common.getValueByPath(fromObject, ['type']);
@@ -754,11 +755,6 @@ export function schemaToVertex(
     common.setValueByPath(toObject, ['maxLength'], fromMaxLength);
   }
 
-  const fromTitle = common.getValueByPath(fromObject, ['title']);
-  if (fromTitle != null) {
-    common.setValueByPath(toObject, ['title'], fromTitle);
-  }
-
   const fromMinLength = common.getValueByPath(fromObject, ['minLength']);
   if (fromMinLength != null) {
     common.setValueByPath(toObject, ['minLength'], fromMinLength);
@@ -843,6 +839,11 @@ export function schemaToVertex(
   const fromRequired = common.getValueByPath(fromObject, ['required']);
   if (fromRequired != null) {
     common.setValueByPath(toObject, ['required'], fromRequired);
+  }
+
+  const fromTitle = common.getValueByPath(fromObject, ['title']);
+  if (fromTitle != null) {
+    common.setValueByPath(toObject, ['title'], fromTitle);
   }
 
   const fromType = common.getValueByPath(fromObject, ['type']);

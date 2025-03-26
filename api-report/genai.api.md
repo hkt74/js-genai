@@ -360,7 +360,7 @@ interface File_2 {
     mimeType?: string;
     name?: string;
     sha256Hash?: string;
-    sizeBytes?: number;
+    sizeBytes?: string;
     source?: FileSource;
     state?: FileState;
     updateTime?: string;
@@ -1043,6 +1043,22 @@ export enum MaskReferenceMode {
 }
 
 // @public (undocumented)
+export enum MediaModality {
+    // (undocumented)
+    AUDIO = "AUDIO",
+    // (undocumented)
+    DOCUMENT = "DOCUMENT",
+    // (undocumented)
+    IMAGE = "IMAGE",
+    // (undocumented)
+    MODALITY_UNSPECIFIED = "MODALITY_UNSPECIFIED",
+    // (undocumented)
+    TEXT = "TEXT",
+    // (undocumented)
+    VIDEO = "VIDEO"
+}
+
+// @public (undocumented)
 export enum MediaResolution {
     // (undocumented)
     MEDIA_RESOLUTION_HIGH = "MEDIA_RESOLUTION_HIGH",
@@ -1068,7 +1084,7 @@ export enum Modality {
 
 // @public
 export interface ModalityTokenCount {
-    modality?: Modality;
+    modality?: MediaModality;
     tokenCount?: number;
 }
 

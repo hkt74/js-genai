@@ -134,7 +134,8 @@ export function tContent(
     throw new Error('ContentUnion is required');
   }
   if (_isContent(origin)) {
-    // @ts-expect-error: _isContent is a utility function that checks if the origin is a Content.
+    // @ts-expect-error: _isContent is a utility function that checks if the
+    // origin is a Content.
     return origin;
   }
 

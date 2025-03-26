@@ -46,6 +46,12 @@ export class Caches extends BaseModule {
   /**
    * Creates a cached contents resource.
    *
+   * @remarks
+   * Context caching is only supported for specific models. See [Gemini
+   * Developer API reference] (https://ai.google.dev/gemini-api/docs/caching?lang=node/context-cac)
+   * and [Vertex AI reference] (https://cloud.google.com/vertex-ai/generative-ai/docs/context-cache/context-cache-overview#supported_models)
+   * for more information.
+   *
    * @param params - The parameters for the create request.
    * @return The created cached content.
    *
@@ -53,7 +59,7 @@ export class Caches extends BaseModule {
    * ```ts
    * const contents = ...; // Initialize the content to cache.
    * const response = await ai.caches.create({
-   *   model: 'gemini-2.0-flash',
+   *   model: 'gemini-1.5-flash',
    *   config: {
    *    'contents': contents,
    *    'displayName': 'test cache',

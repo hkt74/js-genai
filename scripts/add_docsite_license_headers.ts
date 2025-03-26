@@ -38,5 +38,6 @@ function processDirectory(directory: string) {
   }
 }
 
-const docsDir = path.join(__dirname, '..', 'docs');
+const targetDirName: string = process.argv[2] || 'docs';
+const docsDir = path.join(__dirname, '..', targetDirName);
 processDirectory(docsDir);

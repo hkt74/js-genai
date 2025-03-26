@@ -28,8 +28,9 @@ jobs:
       - name: Generate pages
         id: generate_pages
         run: |
-          echo "Author name: ${{ github.event.commits[0].author.name }}"
-          if [[ ${{ github.event.commits[0].author.name }} == 'release-please[bot]' ]]; then
+          AUTHOR_NAME="${{ github.event.commits[0].author.name }}"
+          echo "Author name: $AUTHOR_NAME"
+          if [[ "$AUTHOR_NAME" == 'release-please[bot]' ]]; then
             echo "Author is release-please[bot], generating stable pages"
             echo "is_release_please=true" >> $GITHUB_OUTPUT
             npm run pages-stable

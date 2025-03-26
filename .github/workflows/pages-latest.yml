@@ -1,4 +1,4 @@
-name: Update pages from latest change - test
+name: Update pages
 
 on:
   push:
@@ -23,15 +23,24 @@ jobs:
         with:
           node-version: '22.x'
           cache: 'npm'
-      - name: Install dependencies
+      - name: Install dependen  cies
         run: npm ci
-      - name: Generate pages from latest change
-        run: npm run pages-latest
+      - name: Generate pages
+        id: generate_pages
+        run: |
+          echo "Author name: ${{ github.event.commits[0].author.name }}"
+          if [[ ${{ github.event.commits[0].author.name }} == 'release-please[bot]' ]]; then
+            echo "Author is release-please[bot], generating stable pages"
+            echo "is_release_please=true" >> $GITHUB_OUTPUT
+            npm run pages-stable
+          else
+            echo "Author is not release-please[bot], generating latest pages"
+            echo "is_release_please=false" >> $GITHUB_OUTPUT
+            npm run pages-latest
+          fi
       - name: Check for documentation changes
         id: check_changes
         run: |
-          echo "git diff"
-          git diff --shortstat "origin/pages-only" -- "pages/"
           if [[ $(git diff --shortstat origin/pages-only -- pages) ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -64,7 +73,6 @@ jobs:
              echo "No effective changes staged after copy. Skipping commit."
              exit 0
           fi
-
           echo "Staging changes in pages/..."
           git add pages/
           echo "Unstaging pages/stable/..."
@@ -73,5 +81,11 @@ jobs:
             echo "No relevant changes detected in 'pages/' (excluding 'pages/stable/') to commit."
             exit 0
           fi
-          git commit -m "Update pages from main branch commit: ${{ github.sha }}"
+          if steps.generate_pages.outputs.is_release_please == 'true'; then
+            echo "Author is release-please[bot], committing stable pages"
+            git commit -m "Update stable pages from release-please commit: ${{ github.sha }}"
+          else
+            echo "Author is not release-please[bot], committing latest pages"
+            git commit -m "Update latest pages from main branch commit: ${{ github.sha }}"
+          fi
           git push origin pages-only

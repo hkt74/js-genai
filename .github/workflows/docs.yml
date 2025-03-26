@@ -23,11 +23,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Generate documentation
-        run: npm run docs
+        run: npm run docs-latest && npm run docs-stable
       - name: Check for documentation changes
         id: check_changes
         run: |
-          if [[ -n "$(git diff pages-only HEAD -- docs/)" ]]; then
+          if [[ -n "$(git diff pages-only HEAD -- pages/)" ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
@@ -45,7 +45,7 @@ jobs:
         run: |
           git config user.email "genai-sdk-bot@google.com"
           git config user.name "genai-sdk-bot"
-          git add docs/
+          git add pages/
           COMMIT_MESSAGE="docs: Update docs from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}"
           echo "Commit message: $COMMIT_MESSAGE"
           git commit -m "$COMMIT_MESSAGE" --allow-empty

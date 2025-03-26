@@ -27,14 +27,12 @@ jobs:
       - name: Check for documentation changes
         id: check_changes
         run: |
-          echo "diff with pages-only"
-          git diff origin/pages-only -- pages/
-          if [[ -n "$(git diff origin/pages-only HEAD -- pages/)" ]]; then
-            echo "Documentation changes detected."
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          else
+          if git diff --quiet origin/pages-only HEAD -- pages/; then
             echo "No documentation changes detected."
             echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Documentation changes detected."
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
         shell: bash
       - name: Get latest commit SHA

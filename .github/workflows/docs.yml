@@ -43,7 +43,7 @@ jobs:
           echo "Latest commit SHA: $COMMIT_SHA"
       # Step 5: Apply changes to pages-only branch if differences exist
       - name: Commit and Push Changes to pages-only
-        if: steps.diff_check.outputs.has_changes == 'true'
+        if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           # Configure git user for the commit
           git config user.email "genai-sdk-bot@google.com" # Or your preferred bot email

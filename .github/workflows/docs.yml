@@ -1,9 +1,8 @@
-name: Update docs
+name: Update docs test
 
 on:
   push:
-    branches:
-      - main
+    branches: [ 'main' ]
 
 jobs:
   update-docs:
@@ -15,7 +14,7 @@ jobs:
       - name: Checkout main branch
         uses: actions/checkout@v4
         with:
-          ref: main
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,30 +23,50 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Generate documentation
-        run: npm run docs
+        run: npm run docs-latest && npm run docs-stable
       - name: Check for documentation changes
         id: check_changes
         run: |
-          if [[ -n "$(git status --porcelain docs/)" ]]; then
+          if [[ $(git diff --shortstat origin/pages-only -- pages) ]]; then
             echo "Documentation changes detected."
-            echo "::set-output name=has_changes::true"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
           else
             echo "No documentation changes detected."
-            echo "::set-output name=has_changes::false"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
-      - name: Get latest commit SHA
-        id: get_commit_sha
+      - name: Checkout target branch (pages-only) in a sub-directory
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: pages-only
+          path: pages-deploy
+      - name: Clear old pages content on target branch checkout
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: rm -rf ./pages-deploy/pages/* || true
+
+      - name: Copy generated pages content to target branch checkout
+        if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          COMMIT_SHA=$(git log -1 --pretty=%H) # Get latest commit SHA (full hash)
-          echo "::set-output name=commit_sha::$COMMIT_SHA"
-          echo "Latest commit SHA: $COMMIT_SHA"
-      - name: Commit and Push to static-content-latest
-        if: steps.check_changes.outputs.has_changes == 'true' # Only run if changes were detected
+          mkdir -p ./pages-deploy/pages # Ensure target directory exists
+          cp -a ./pages/. ./pages-deploy/pages/
+
+      - name: Commit and push changes to pages-only branch
+        if: steps.check_changes.outputs.has_changes == 'true'
+        working-directory: ./pages-deploy # Run commands inside the target branch checkout
         run: |
-          git config user.email "genai-sdk-bot@google.com"
-          git config user.name "genai-sdk-bot"
-          git add docs/
-          COMMIT_MESSAGE=docs: Update latest static content from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}
-          echo "Committing message: $COMMIT_MESSAGE"
-          git commit -m "$COMMIT_MESSAGE" --allow-empty
-          git push --force origin HEAD:static-content-latest
+          # Configure Git user for commit
+          git config user.email "genai-sdk-bot@google.com" # Or your preferred bot email
+          git config user.name "genai-sdk-bot"           # Or your preferred bot name
+
+          # Add, commit, and push (we already know there are changes from the diff_check step)
+          # A final 'git status' check within this directory is still a good safety measure
+          # in case the copy process itself introduced no effective changes (e.g., only metadata)
+          if [[ -z $(git status --porcelain) ]]; then
+             echo "No effective changes staged after copy. Skipping commit."
+             exit 0
+          fi
+
+          echo "Staging, committing, and pushing changes..."
+          git add pages # Stage only the changes within the 'pages' directory
+          git commit -m "Update pages from main branch build" -m "Source commit: ${{ github.sha }}"
+          git push origin pages-only

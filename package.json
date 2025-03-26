@@ -41,7 +41,7 @@
     "unit-test": "ts-node node_modules/jasmine/bin/jasmine test/unit/web/*_test.ts test/unit/node/*_test.ts test/unit/*_test.ts",
     "system-test": "ts-node node_modules/jasmine/bin/jasmine test/system/**/*_test.ts",
     "docs": "typedoc && ts-node scripts/add_docsite_license_headers.ts",
-    "docs-latest": "typedoc --out docs-latest && ts-node scripts/add_docsite_license_headers.ts docs-latest && ./scripts/move_docs_to_pages.sh",
+    "docs-latest": "typedoc --out docs-latest --gitRevision main && ts-node scripts/add_docsite_license_headers.ts docs-latest && ./scripts/move_docs_to_pages.sh",
     "docs-stable": "typedoc --out docs-stable && ts-node scripts/add_docsite_license_headers.ts  docs-stable && ./scripts/move_docs_to_pages.sh",
     "format": "prettier '**/*.ts' '**/*.mjs' '**/*.json' --write",
     "lint": "eslint '**/*.ts'",

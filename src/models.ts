@@ -35,7 +35,7 @@ export class Models extends BaseModule {
    * - The model name starts with 'models/', for example:
    *  'models/gemini-2.0-flash'
    * - For tuned models, the model name starts with 'tunedModels/',
-   * for example:
+   * for example: test
    * 'tunedModels/1234567890123456789'
    *
    * Some models support multimodal input and output.

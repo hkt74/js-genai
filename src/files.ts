@@ -249,4 +249,62 @@ export class Files extends BaseModule {
       });
     }
   }
+
+  /**
+   * Deletes a remotely stored file.
+   *
+   * @param params - The parameters for the delete request.
+   * @return The DeleteFileResponse, the response for the delete method.
+   *
+   * @example
+   * The following code deletes an example file named "files/mehozpxf877d".
+   *
+   * ```ts
+   * await ai.files.delete({name: file.name});
+   * ```
+   */
+  async delete(
+    params: types.DeleteFileParameters,
+  ): Promise<types.DeleteFileResponse> {
+    let response: Promise<types.DeleteFileResponse>;
+    let path: string = '';
+    let queryParams: Record<string, string> = {};
+    if (this.apiClient.isVertexAI()) {
+      throw new Error(
+        'This method is only supported by the Gemini Developer API.',
+      );
+    } else {
+      const body = converters.deleteFileParametersToMldev(
+        this.apiClient,
+        params,
+      );
+      path = common.formatMap(
+        'files/{file}',
+        body['_url'] as Record<string, unknown>,
+      );
+      queryParams = body['_query'] as Record<string, string>;
+      delete body['config'];
+      delete body['_url'];
+      delete body['_query'];
+
+      response = this.apiClient
+        .request({
+          path: path,
+          queryParams: queryParams,
+          body: JSON.stringify(body),
+          httpMethod: 'DELETE',
+          httpOptions: params.config?.httpOptions,
+        })
+        .then((httpResponse) => {
+          return httpResponse.json();
+        }) as Promise<types.DeleteFileResponse>;
+
+      return response.then(() => {
+        const resp = converters.deleteFileResponseFromMldev();
+        const typedResp = new types.DeleteFileResponse();
+        Object.assign(typedResp, resp);
+        return typedResp;
+      });
+    }
+  }
 }

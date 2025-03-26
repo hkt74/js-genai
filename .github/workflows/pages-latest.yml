@@ -1,4 +1,4 @@
-name: [Test] Update pages from latest change
+name: Update pages from latest change - test
 
 on:
   push:

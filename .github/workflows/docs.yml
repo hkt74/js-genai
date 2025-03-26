@@ -1,4 +1,4 @@
-name: Update docs test
+name: Update docs
 
 on:
   push:

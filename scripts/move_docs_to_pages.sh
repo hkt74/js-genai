@@ -24,8 +24,8 @@ sync_and_remove_directory() {
 
   # 1. Check if source directory exists
   if [ ! -d "$SOURCE_DIR" ]; then
-    echo "Error: Source directory '$SOURCE_DIR' not found." >&2
-    return 1 # Use return in functions for errors
+    echo "Skip: Source directory '$SOURCE_DIR' not found." >&2
+    return 0 # Use return in functions for errors
   fi
 
   # 2. Ensure destination directory exists (create if necessary)

@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  update-docs:
+  update-pages:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '22.x'
           cache: 'npm'
-      - name: Install dependen  cies
+      - name: Install dependencies
         run: npm ci
       - name: Generate pages
         id: generate_pages
@@ -74,19 +74,23 @@ jobs:
              echo "No effective changes staged after copy. Skipping commit."
              exit 0
           fi
-          echo "Staging changes in pages/..."
-          git add pages/
-          echo "Unstaging pages/stable/..."
-          git reset HEAD pages/stable/ --quiet
+
+          if steps.generate_pages.outputs.is_release_please == 'true'; then
+            echo "Staging changes in pages/stable/..."
+            git add pages/stable/
+            COMMIT_MESSAGE="Update stable pages from release-please commit: ${{ github.sha }}"
+          else
+            echo "Staging changes in pages/..."
+            git add pages/
+            echo "Unstaging pages/stable/..."
+            git reset HEAD pages/stable/ --quiet
+            COMMIT_MESSAGE="Update latest pages from main branch commit: ${{ github.sha }}"
+          fi
+
           if git diff --staged --quiet; then
             echo "No relevant changes detected in 'pages/' (excluding 'pages/stable/') to commit."
             exit 0
           fi
-          if steps.generate_pages.outputs.is_release_please == 'true'; then
-            echo "Author is release-please[bot], committing stable pages"
-            git commit -m "Update stable pages from release-please commit: ${{ github.sha }}"
-          else
-            echo "Author is not release-please[bot], committing latest pages"
-            git commit -m "Update latest pages from main branch commit: ${{ github.sha }}"
-          fi
+          echo "Committing message: $COMMIT_MESSAGE"
+          git commit -m "$COMMIT_MESSAGE"
           git push origin pages-only

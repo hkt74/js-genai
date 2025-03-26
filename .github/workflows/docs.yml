@@ -68,5 +68,5 @@ jobs:
 
           echo "Staging, committing, and pushing changes..."
           git add pages # Stage only the changes within the 'pages' directory
-          git commit -m "Update pages from main branch build" -m "Source commit: ${{ github.sha }}"
+          git commit -m "Update pages from main branch commit: ${{ github.sha }}"
           git push origin pages-only

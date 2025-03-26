@@ -44,10 +44,38 @@ jobs:
       - name: Commit and Push to pages-only branch
         if: steps.check_changes.outputs.has_changes == 'true' # Only run if changes were detected
         run: |
+          # Configure git user
           git config user.email "genai-sdk-bot@google.com"
           git config user.name "genai-sdk-bot"
+
+          git checkout -B pages-only origin/pages-only
+
+     
+          echo "Removing existing pages/ content from local pages-only branch..."
+          git rm -rf --ignore-unmatch pages/
+
+          echo "Checking out generated pages/ content from origin/main state..."
+          git checkout origin/main -- pages/
+          # --- End Strategy ---
+
+          # Stage the changes (the new pages/ directory)
+          echo "Staging new pages/ directory..."
           git add pages/
-          COMMIT_MESSAGE="docs: Update docs from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}"
-          echo "Commit message: $COMMIT_MESSAGE"
-          git commit -m "$COMMIT_MESSAGE" --allow-empty
-          git push --force origin pages-only
+
+          # Check if there are actual changes to commit
+          if ! git diff --staged --quiet; then
+            echo "Changes detected, proceeding with commit..."
+            COMMIT_MESSAGE="docs: Update docs from main branch commit: ${{ steps.get_commit_sha.outputs.commit_sha }} [skip ci]"
+            echo "Commit message: $COMMIT_MESSAGE"
+            git commit -m "$COMMIT_MESSAGE"
+
+            echo "Force pushing changes to origin/pages-only..."
+            # Force push the updated local pages-only branch
+            # This overwrites the remote pages-only branch with our new commit
+            # based correctly on the previous pages-only state.
+            git push --force origin pages-only
+            echo "Push successful."
+          else
+            echo "No effective changes staged after checkout. Skipping commit and push."
+          fi
+        shell: bash

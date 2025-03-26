@@ -50,4 +50,4 @@ jobs:
           COMMIT_MESSAGE="docs: Update docs from merged commit: ${{ steps.get_commit_sha.outputs.commit_sha }}"
           echo "Commit message: $COMMIT_MESSAGE"
           git commit -m "$COMMIT_MESSAGE" --allow-empty
-          git push --force origin HEAD:pages-only
+          git push --force origin pages-only

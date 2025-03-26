@@ -30,8 +30,9 @@ jobs:
       - name: Check for documentation changes
         id: check_changes
         run: |
+          ls -al pages
           echo "git diff"
-          git diff --shortstat origin/pages-only -- pages
+          git diff --shortstat "origin/pages-only -- "pages/"
           if [[ $(git diff --shortstat origin/pages-only -- pages) ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT

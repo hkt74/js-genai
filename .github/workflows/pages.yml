@@ -1,4 +1,4 @@
-name: Update pages
+name: Update pages test
 
 on:
   push:

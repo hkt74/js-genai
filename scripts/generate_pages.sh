@@ -35,7 +35,7 @@ case "$VERSION_ARG" in
     ;;
   stable)
     echo "Current stable version: $STABLE_VERSION"
-    generate_and_move_docs "pages/stable" $STABLE_VERSION
+    generate_and_move_docs "pages/stable" "v$STABLE_VERSION"
     ;;
   *)
     echo "Error: Invalid version type '$VERSION_ARG'. Please use 'latest', 'stable', or leave blank for latest." >&2

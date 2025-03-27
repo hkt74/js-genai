@@ -1,0 +1,96 @@
+name: Update pages
+
+on:
+  push:
+    branches: [ 'main' ]
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  update-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate pages
+        id: generate_pages
+        run: |
+          AUTHOR_NAME="${{ github.event.commits[0].author.name }}"
+          echo "Author name: $AUTHOR_NAME"
+          if [[ "$AUTHOR_NAME" == 'release-please[bot]' ]]; then
+            echo "Author is release-please[bot], generating stable pages"
+            echo "is_release_please=true" >> $GITHUB_OUTPUT
+            npm run pages-stable
+          else
+            echo "Author is not release-please[bot], generating latest pages"
+            echo "is_release_please=false" >> $GITHUB_OUTPUT
+            npm run pages-latest
+          fi
+      - name: Check for documentation changes
+        id: check_changes
+        run: |
+          if [[ $(git diff --shortstat origin/pages-only -- pages) ]]; then
+            echo "Documentation changes detected."
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "No documentation changes detected."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Checkout target branch (pages-only) in a sub-directory
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: pages-only
+          path: pages-deploy
+      - name: Clear old pages content on target branch checkout
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: rm -rf ./pages-deploy/pages/* || true
+      - name: Copy generated pages content to target branch checkout
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          mkdir -p ./pages-deploy/pages
+          cp -a ./pages/. ./pages-deploy/pages/
+      - name: Commit and push changes to pages-only branch
+        if: steps.check_changes.outputs.has_changes == 'true'
+        working-directory: ./pages-deploy
+        run: |
+          git config user.email "genai-sdk-bot@google.com"
+          git config user.name "genai-sdk-bot"
+
+          if [[ -z $(git status --porcelain) ]]; then
+             echo "No effective changes staged after copy. Skipping commit."
+             exit 0
+          fi
+
+          if steps.generate_pages.outputs.is_release_please == 'true'; then
+            echo "Staging changes in pages/stable/..."
+            git add pages/stable/
+            COMMIT_MESSAGE="Update stable pages from release-please commit: ${{ github.sha }}"
+          else
+            echo "Staging changes in pages/..."
+            git add pages/
+            echo "Unstaging pages/stable/..."
+            git reset HEAD pages/stable/ --quiet
+            COMMIT_MESSAGE="Update latest pages from main branch commit: ${{ github.sha }}"
+          fi
+
+          if git diff --staged --quiet; then
+            echo "No relevant changes detected in 'pages/' (excluding 'pages/stable/') to commit."
+            exit 0
+          fi
+          echo "Committing message: $COMMIT_MESSAGE"
+          git commit -m "$COMMIT_MESSAGE"
+          git push origin pages-only

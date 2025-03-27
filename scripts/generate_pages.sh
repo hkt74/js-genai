@@ -27,6 +27,7 @@ generate_and_move_docs() {
 VERSION_ARG=${1:-main}
 RELEASE_VERSION=$(grep ":" .release-please-manifest.json | sed 's/.*": "\(.*\)"/\1/')
 
+
 echo "Selected version type: $VERSION_ARG"
 
 case "$VERSION_ARG" in
@@ -40,6 +41,7 @@ case "$VERSION_ARG" in
   *)
     echo "Error: Invalid version type '$VERSION_ARG'. Please use 'main', 'release', or leave blank for main." >&2
     echo "Usage: $0 [main|release]" >&2
+
     exit 1
     ;;
 esac

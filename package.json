@@ -41,8 +41,13 @@
     "unit-test": "ts-node node_modules/jasmine/bin/jasmine test/unit/**/*_test.ts test/unit/*_test.ts",
     "system-test": "ts-node node_modules/jasmine/bin/jasmine test/system/**/*_test.ts",
     "docs": "typedoc && ts-node scripts/add_docsite_license_headers.ts",
+<<<<<<< HEAD
     "pages-latest": "./scripts/generate_pages.sh latest",
     "pages-stable": "./scripts/generate_pages.sh stable",
+=======
+    "pages-main": "./scripts/generate_pages.sh main",
+    "pages-release": "./scripts/generate_pages.sh release",
+>>>>>>> 0ff3e7fa1d92b4275d31aceca943f500aea8151b
     "format": "prettier '**/*.ts' '**/*.mjs' '**/*.json' --write",
     "lint": "eslint '**/*.ts'",
     "lint-fix": "eslint --fix '**/*.ts'"

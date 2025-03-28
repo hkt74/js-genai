@@ -54,6 +54,14 @@ jobs:
         with:
           ref: pages-only
           path: pages-deploy
+      - name: Clear old pages content on target branch checkout
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: rm -rf ./pages-deploy/pages/* || true
+      - name: Copy generated pages content to target branch checkout
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          mkdir -p ./pages-deploy/pages
+          cp -a ./pages/. ./pages-deploy/pages/
       - name: Commit and push changes to pages-only branch
         if: steps.check_changes.outputs.has_changes == 'true'
         working-directory: ./pages-deploy

@@ -1,6 +1,8 @@
 # GitHub Pages Content (`pages-only`)
 
-**Purpose:** This branch exclusively contains the static web content (SDK docs, web samples, etc.) deployed to this repository's GitHub Pages site.
+**Purpose:** 
+
+* This branch exclusively contains the static web content (documentation, web samples, etc.) deployed to the GitHub Pages site.
 
 **Workflow:**
 

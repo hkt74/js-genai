@@ -1,4 +1,4 @@
-# GitHub Pages Content (`pages-only`)
+# GitHub Pages Content
 
 **Purpose:** 
 

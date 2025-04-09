@@ -2,7 +2,7 @@
 
 **Purpose:** 
 
-* This branch exclusively contains the static web content (documentation, web samples, etc.) deployed to the GitHub Pages site.
+* This branch exclusively contains the static web content (documentation, web samples, etc.) deployed to the GitHub Pages site
 
 **Workflow:**
 

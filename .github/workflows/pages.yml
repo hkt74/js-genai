@@ -42,7 +42,7 @@ jobs:
       - name: Check for documentation changes
         id: check_changes
         run: |
-          if [[ $(git diff --shortstat origin/pages-only -- pages/main/ pages/release/) ]]; then
+          if [[ $(git diff --shortstat origin/pages-only -- main_docs/ release_docs/) ]]; then
             echo "Documentation changes detected."
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
@@ -57,12 +57,12 @@ jobs:
           path: pages-deploy
       - name: Clear old pages content on target branch checkout
         if: steps.check_changes.outputs.has_changes == 'true'
-        run: rm -rf ./pages-deploy/pages/* || true
+        run: rm -rf ./pages-deploy/*_docs || true
       - name: Copy generated pages content to target branch checkout
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          mkdir -p ./pages-deploy/pages
-          cp -a ./pages/. ./pages-deploy/pages/
+          cp -a ./main_docs/. ./pages-deploy/main_docs/
+          cp -a ./release_docs/. ./pages-deploy/release_docs/
       - name: Commit and push changes to pages-only branch
         if: steps.check_changes.outputs.has_changes == 'true'
         working-directory: ./pages-deploy
@@ -76,17 +76,17 @@ jobs:
           fi
 
           if steps.generate_pages.outputs.is_release_event == 'true'; then
-            echo "Staging changes in pages/release/..."
-            git add pages/release/
+            echo "Staging changes in release_docs/..."
+            git add release_docs/
             COMMIT_MESSAGE="Update release pages from release-please commit: ${{ github.sha }}"
           else
-            echo "Staging changes in pages/main/..."
-            git add pages/main/
+            echo "Staging changes in main_docs/..."
+            git add main_docs/
             COMMIT_MESSAGE="Update main pages from main branch commit: ${{ github.sha }}"
           fi
 
           if git diff --staged --quiet; then
-            echo "No relevant changes detected in 'pages/' to commit."
+            echo "No relevant changes detected to commit."
             exit 0
           fi
           echo "Committing message: $COMMIT_MESSAGE"

@@ -55,14 +55,18 @@ jobs:
         with:
           ref: pages-only
           path: pages-deploy
-      - name: Clear old pages content on target branch checkout
+      - name: Replace old pages content with new pages content
         if: steps.check_changes.outputs.has_changes == 'true'
-        run: rm -rf ./pages-deploy/*_docs || true
-      - name: Copy generated pages content to target branch checkout
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          cp -a ./main_docs/. ./pages-deploy/main_docs/
-          cp -a ./release_docs/. ./pages-deploy/release_docs/
+        run:  |
+          if steps.generate_pages.outputs.is_release_event == 'true'; then
+            echo "Updating release_docs"
+            rm -rf ./pages-deploy/release_docs || true
+            cp -a ./main_docs/. ./pages-deploy/main_docs/
+          else
+            echo "Updating main_docs"
+            rm -rf ./pages-deploy/main_docs || true
+            cp -a ./release_docs/. ./pages-deploy/release_docs/
+          fi
       - name: Commit and push changes to pages-only branch
         if: steps.check_changes.outputs.has_changes == 'true'
         working-directory: ./pages-deploy

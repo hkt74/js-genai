@@ -61,11 +61,11 @@ jobs:
           if steps.generate_pages.outputs.is_release_event == 'true'; then
             echo "Updating release_docs"
             rm -rf ./pages-deploy/release_docs || true
-            cp -a ./main_docs/. ./pages-deploy/main_docs/
+            cp -a ./release_docs/. ./pages-deploy/release_docs/
           else
             echo "Updating main_docs"
             rm -rf ./pages-deploy/main_docs || true
-            cp -a ./release_docs/. ./pages-deploy/release_docs/
+            cp -a ./main_docs/. ./pages-deploy/main_docs/
           fi
       - name: Commit and push changes to pages-only branch
         if: steps.check_changes.outputs.has_changes == 'true'
